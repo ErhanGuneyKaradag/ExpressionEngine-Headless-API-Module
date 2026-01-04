@@ -24,7 +24,7 @@ A powerful RESTful API module for ExpressionEngine that provides token-based aut
    └── upd.api_module.php
    ```
 
-2. Go to your EE Control Panel → Developer → Add-Ons
+2. Go to your EE Control Panel → Add-Ons
 
 3. Install the **API Module**
 
