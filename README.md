@@ -74,7 +74,38 @@ Add the following rules to your root `.htaccess` file (before ExpressionEngine's
 - CORS settings are optional but recommended if you're calling the API from a different domain
 - Keep your existing ExpressionEngine .htaccess rules intact
 
-### 3. Install the Module
+### 3. Configure ExpressionEngine
+
+Add the following to your `system/user/config/config.php` file:
+
+```php
+// Disable CSRF protection for API endpoints
+$config['disable_csrf_protection'] = 'y';
+```
+
+**⚠️ Security Note:**
+- This is required for the API to accept POST requests without CSRF tokens
+- The API is protected by token-based authentication instead
+- Only disable CSRF if you're using the API module
+- Alternative: You can modify the extension to check if the request is to `/api/*` and conditionally disable CSRF only for API routes
+
+**Advanced (Optional):** If you want to keep CSRF enabled for the rest of your site, you can add this condition to your `ext.api_module.php`:
+
+```php
+public function route_api()
+{
+    $uri = ee()->uri->uri_string();
+    
+    // Disable CSRF only for API routes
+    if (strpos($uri, 'api/') === 0) {
+        ee()->config->set_item('disable_csrf_protection', 'y');
+    }
+    
+    // ... rest of the code
+}
+```
+
+### 4. Install the Module
 
 1. Go to your EE Control Panel → **Developer** → **Add-Ons**
 2. Find **API Module** and click **Install**
