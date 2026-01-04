@@ -39,15 +39,27 @@ Base URL: `https://yoursite.com/api/`
 
 ### Authentication
 
+The API uses your existing ExpressionEngine user credentials for authentication. You can use any valid EE member account (admin or regular members).
+
 #### Generate Token
 
 **Endpoint:** `POST /api/token`
 
+**Description:** Login with your ExpressionEngine username and password to receive an authentication token.
+
 **Request:**
 ```json
 {
-  "username": "your_username",
-  "password": "your_password"
+  "username": "your_ee_username",
+  "password": "your_ee_password"
+}
+```
+
+**Example:**
+```json
+{
+  "username": "admin",
+  "password": "my_secure_password"
 }
 ```
 
@@ -60,7 +72,12 @@ Base URL: `https://yoursite.com/api/`
 }
 ```
 
-**Token expires in 24 hours.**
+**Notes:**
+- Use your **ExpressionEngine Control Panel** login credentials
+- Token expires in **24 hours** (86400 seconds)
+- The same username/password you use to login to `/system/` admin area
+- Token is required for all other API endpoints
+- Store the token securely in your application
 
 ---
 
