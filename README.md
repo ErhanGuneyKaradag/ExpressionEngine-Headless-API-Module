@@ -107,7 +107,7 @@ public function route_api()
 
 ### 4. Install the Module
 
-1. Go to your EE Control Panel → **Developer** → **Add-Ons**
+1. Go to your EE Control Panel → **Add-Ons**
 2. Find **API Module** and click **Install**
 3. The module will automatically:
    - Create the `api_tokens` database table
