@@ -15,23 +15,85 @@ A powerful RESTful API module for ExpressionEngine that provides token-based aut
 
 ## Installation
 
-1. Copy the module files to your ExpressionEngine installation:
-   ```
-   system/user/addons/api_module/
-   ├── addon.setup.php
-   ├── ext.api_module.php
-   ├── mod.api_module.php
-   └── upd.api_module.php
-   ```
+### 1. Upload Module Files
 
-2. Go to your EE Control Panel → Add-Ons
+Copy the module files to your ExpressionEngine installation:
+```
+system/user/addons/api_module/
+├── addon.setup.php
+├── ext.api_module.php
+├── mod.api_module.php
+└── upd.api_module.php
+```
 
-3. Install the **API Module**
+### 2. Configure .htaccess
 
-4. The module will automatically:
+Add the following rules to your root `.htaccess` file (before ExpressionEngine's default rules):
+
+```apache
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteBase /
+
+    # Pass Authorization header (IMPORTANT!)
+    RewriteCond %{HTTP:Authorization} .
+    RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
+
+    # API routing
+    RewriteCond %{REQUEST_URI} ^/api/
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteRule ^(.*)$ index.php/$1 [L,QSA]
+
+    # ExpressionEngine standard routing (keep existing rules)
+    RewriteCond %{REQUEST_URI} !^/(system|themes|images)/
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteCond $1 !^(index\.php)
+    RewriteRule ^(.*)$ index.php/$1 [L,QSA]
+</IfModule>
+
+# CORS settings (optional, for cross-domain requests)
+<IfModule mod_headers.c>
+    SetEnvIf Request_URI "^/api/" IS_API
+    Header set Access-Control-Allow-Origin "*" env=IS_API
+    Header set Access-Control-Allow-Methods "GET, POST, PUT, DELETE, OPTIONS" env=IS_API
+    Header set Access-Control-Allow-Headers "Content-Type, Authorization" env=IS_API
+    Header set Access-Control-Max-Age "3600" env=IS_API
+</IfModule>
+
+# Handle OPTIONS requests quickly
+<IfModule mod_rewrite.c>
+    RewriteCond %{REQUEST_METHOD} OPTIONS
+    RewriteRule ^(.*)$ $1 [R=200,L]
+</IfModule>
+```
+
+**⚠️ Important Notes:**
+- The Authorization header pass-through is **required** for token authentication to work
+- CORS settings are optional but recommended if you're calling the API from a different domain
+- Keep your existing ExpressionEngine .htaccess rules intact
+
+### 3. Install the Module
+
+1. Go to your EE Control Panel → **Developer** → **Add-Ons**
+2. Find **API Module** and click **Install**
+3. The module will automatically:
    - Create the `api_tokens` database table
    - Register the extension hooks
    - Set up routing for `/api/*` endpoints
+
+### 4. Test the Installation
+
+Test if the API is working:
+
+```bash
+curl -X POST https://yoursite.com/api/token \
+  -H "Content-Type: application/json" \
+  -d '{"username":"admin","password":"your_password"}'
+```
+
+If you see a token in the response, installation is successful! ✅
 
 ## API Endpoints
 
